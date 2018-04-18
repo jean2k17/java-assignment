@@ -22,8 +22,9 @@ import javax.swing.JFileChooser;
 
 public class GUI extends JFrame implements ActionListener, MouseListener
 {
-	private JButton Search;
+	private JButton search;
 	private JButton browse;
+	private JButton timesFound;
 	private JButton browse2;
 	private JButton compare;
 	private JTextField word;
@@ -51,9 +52,9 @@ public class GUI extends JFrame implements ActionListener, MouseListener
 		add(chosenF);
 		chosenF.addActionListener(this);
 		
-		Search= new JButton("Search");
-		add(Search);
-		Search.addActionListener(this);
+		search= new JButton("Search");
+		add(search);
+		search.addActionListener(this);
 		
 		browse= new JButton("browse");
 		add(browse);
@@ -67,7 +68,9 @@ public class GUI extends JFrame implements ActionListener, MouseListener
 		add(compare);
 		compare.addActionListener(this);
 		
-		fileC = new JFileChooser();
+		timesFound= new JButton("times found");
+		add(timesFound);
+		timesFound.addActionListener(this);
 		
 		setVisible(true);
 	
@@ -92,7 +95,7 @@ public class GUI extends JFrame implements ActionListener, MouseListener
 	public void actionPerformed(ActionEvent event) 
 	{
 		String text1 = word.getText();
-
+		fileC = new JFileChooser();
 		if (event.getSource()==browse)
 		{
 			returnVal = fileC.showOpenDialog(null);
@@ -101,43 +104,37 @@ public class GUI extends JFrame implements ActionListener, MouseListener
 				file = fileC.getSelectedFile();
 				try
 				{
-					if (event.getSource() == Search)
+					br = new BufferedReader(new FileReader(file));
+					
+					String currentLine;
+					while ((currentLine = br.readLine()) !=null)
 					{
-						
-					}
-						br = new BufferedReader(new FileReader(file));
-					
-					
-						String currentLine;
-						while ((currentLine = br.readLine()) !=null)
-						{
-							view.add(currentLine);
-							if(currentLine.contains(text1))
-							{
-								System.out.println("word found");
-							}
+						String[] ar=currentLine.split(".");
+						view.add(currentLine);
 	
-						//System.out.println(currentLine);
-					}
-				}
+					}//end while loop
+				}//end try
 				catch(Exception error)
 				{
 					error.printStackTrace();
-				}
-			}
-		}
-		if (event.getSource() == Search)
+				}//end catch
+			}//end if
+		}//end if
+		if (event.getSource() == search)
 		{
+			System.out.println(view);
 			if(view.contains(text1)) 
 			{
+				//System.out.println("word found");
 				JOptionPane.showMessageDialog(this, "word was found");
-				//System.out.println("word was found");
-				/*for (int i = 0; i < list.size(); i++) {
-				System.out.println(list.get(i));
-				}*/
-			}
+			}//end if 
+			else
+			{
+				JOptionPane.showMessageDialog(this, "not found");
+			}//end else
 
 		}//end if
+		
 		if(event.getSource() == browse2)
 		{
 			returnVal = fileC.showOpenDialog(null);
@@ -146,53 +143,48 @@ public class GUI extends JFrame implements ActionListener, MouseListener
 				file = fileC.getSelectedFile();
 				try
 				{
-					if (event.getSource() == Search)
-					{
-						
-					}
-						br = new BufferedReader(new FileReader(file));
-					
-					
-						String currentLine;
-						while ((currentLine = br.readLine()) !=null)
-						{
-							view2.add(currentLine);
-							if(currentLine.contains(text1))
-							{
-								System.out.println("word found");
-							}
+					br = new BufferedReader(new FileReader(file));
 	
-						//System.out.println(currentLine);
-					}
-				}
+					String currentLine;
+					while ((currentLine = br.readLine()) !=null)
+					{
+						if(currentLine==".")
+						{
+							currentLine = currentLine.replace(".", "");
+						//String[] ar=currentLine.split(",");
+							view2.add(currentLine);
+						}
+					}//end  while
+				}//end try
 				catch(Exception error)
 				{
 					error.printStackTrace();
-				}
-			}
-			
+				}//end catch
+			}//end if 
 		}//end if
 		if(event.getSource() == compare)
 		{
-			for (int i = 0; i < view.size(); i++)
+			if(view.contains(text1) && view2.contains(text1)) 
 			{
-				for (int x = 0; x < view2.size(); x++)
+				JOptionPane.showMessageDialog(this, "both files have the word");
+			}//end if
+			else
+			{
+				JOptionPane.showMessageDialog(this, "no match");
+			}//end else
+		}//end if
+		if(event.getSource()==timesFound)
+		{
+			int num = 0;
+			
+			for (int i = 0; i < view.size(); i++) 
+			{
+				if(word.getText()==view.get(i)) 
 				{
-					if(view.contains(text1) && view2.contains(text1)) 
-					{
-						JOptionPane.showMessageDialog(this, "both files have the word");
-					//System.out.println("word was found");
-					/*for (int i = 0; i < list.size(); i++) {
-					System.out.println(list.get(i));
-					}*/
-					}
-					else
-					{
-						JOptionPane.showMessageDialog(this, "no match");
-					}
+					num++;
 				}
 			}
-		}//end if
-	}
-
-}
+			JOptionPane.showMessageDialog(this, "times found: " + num);
+		}
+	}//end actionperformed
+}//end gui
